@@ -1,16 +1,82 @@
-import { Request, Response, Router } from 'express'
+import express from 'express';
+import { 
+  PrismaStudentsRepository 
+} from './repositories/prisma/PrismaStudentsRepository';
+import { AuthStudentUseCase } from './useCases/authStudentUseCase';
+import { SubmitStudentUseCase } from './useCases/submitStudentUseCase';
 
-import { CreateStudentController } from './app/controllers/CreateStudentController'
-import AuthController from './app/controllers/AuthController'
-import authMiddleware from './app/middlewares/authMiddleware'
+export const routes = express.Router();
 
-const routes = Router()
+routes.post('/students', async (req, res) => {
+  const {
+    fullName,
+    nickName,
+    cpf,
+    birthday,
+    zip,
+    state,
+    city,
+    fullAddress,
+    neighborhood,
+    addressDetails,
+    foneMobile,
+    foneHome,
+    foneCompany,
+    email,
+    password
+  } = req.body;
 
-routes.get('/', (req: Request, res: Response) => {
-  return res.send('Estudai API')
-})
-routes.post('/students', new CreateStudentController().handle)
-routes.post('/auth', AuthController.authenticate)
-routes.get('/students', authMiddleware, new CreateStudentController().index)
+  const prismaStudentsRepository = new PrismaStudentsRepository();
 
-export { routes }
+  const submitStudentUseCase = new SubmitStudentUseCase(
+    prismaStudentsRepository
+  );
+
+  await submitStudentUseCase.execute({
+    fullName,
+    nickName,
+    cpf,
+    birthday,
+    zip,
+    state,
+    city,
+    fullAddress,
+    neighborhood,
+    addressDetails,
+    foneMobile,
+    foneHome,
+    foneCompany,
+    email,
+    password
+  }).catch(({ message }: Error) => {
+    return res.status(409).json({
+      message,
+    })
+  })
+
+  return res.status(201).send();
+}),
+
+routes.post('/auth', async (req, res) => {
+  const {
+    email,
+    password
+  } = req.body;
+
+  const authStudentUseCase = new AuthStudentUseCase();
+
+  await authStudentUseCase.execute({
+    email,
+    password
+  }).then((token) => {
+    return res.json({
+      token,
+    });
+  }).catch(({ message }: Error) => {
+    res.status(401).json({
+      message,
+    });
+  });
+});
+
+// routes.get('/students', authMiddleware, new CreateStudentController().index)
