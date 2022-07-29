@@ -1,7 +1,6 @@
 import { prisma } from "./helpers/prisma";
 import { 
   CreateStudentRepository,
-  GetStudentByIdRepository,
   CheckStudentByEmailRepository,
   CheckStudentByIdRepository,
   CheckByCpf,
@@ -9,27 +8,8 @@ import {
 } from "../../../useCases/protocols/repositories";
 import { CreateStudentData, StudentModel } from "../../../useCases/createStudent/createStudentProtocols";
 
-// interface IStudentAlreadyExists {
-//   cpf: string,
-//   foneMobile: string,
-//   email: string,
-// }
-
-// export const studentAlreadyExists = async ({ cpf, foneMobile, email }: IStudentAlreadyExists) => {
-//   return await prisma.student.findFirst({
-//     where: {
-//       OR: [
-//         { cpf },
-//         { foneMobile },
-//         { email },
-//       ]
-//     }
-//   });
-// } 
-
 export class PrismaStudentsRepository implements 
   CreateStudentRepository, 
-  GetStudentByIdRepository,
   CheckStudentByEmailRepository,
   CheckByCpf,
   CheckByFoneMobile,
@@ -39,13 +19,6 @@ export class PrismaStudentsRepository implements
     await prisma.student.create({
       data
     });
-  }
-
-  async getById(id: string): Promise<StudentModel> {
-      const student = await prisma.student.findUnique({
-        where: { id },
-      });
-      return student;
   }
 
   async checkByEmail(email: string): Promise<StudentModel> {
