@@ -3,6 +3,11 @@ export interface AuthenticationData {
   password: string
 }
 
+export interface AuthenticationResponse {
+  accessToken: string,
+  refreshToken: string
+}
+
 export interface Authentication {
-  auth(authentication: AuthenticationData): Promise<string>
+  auth(authentication: AuthenticationData): Promise<AuthenticationResponse>
 }

@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Student {
-  id            String   @id @default(uuid())
+  id            String         @id @default(uuid())
   fullName      String
   nickName      String?
-  cpf           String   @unique
-  birthday      DateTime @db.Date
+  cpf           String         @unique
+  birthday      DateTime       @db.Date
   postalCode    String
   state         String
   city          String
@@ -20,11 +20,23 @@ model Student {
   neighborhood  String
   addressNumber String
   details       String?
-  foneMobile    String   @unique
+  foneMobile    String         @unique
   foneHome      String?
-  email         String   @unique
+  email         String         @unique
   password      String
-  createdAt     DateTime @default(now())
+  createdAt     DateTime       @default(now())
+  refresh_token RefreshToken[]
 
   @@map("students")
+}
+
+model RefreshToken {
+  id            String   @id @default(uuid())
+  refresh_token String
+  student       Student  @relation(fields: [studentId], references: [id])
+  studentId     String
+  expiresIn     DateTime
+  createdAt     DateTime @default(now())
+
+  @@map("refresh_token")
 }
