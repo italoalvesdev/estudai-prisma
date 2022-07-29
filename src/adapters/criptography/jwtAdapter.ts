@@ -3,13 +3,14 @@ import jwt from 'jsonwebtoken'
 
 export class JwtAdapter implements Encrypter, Decrypter {
   constructor(
-    private readonly secret: string
+    private readonly secret: string,
+    private readonly expiresIn: string | number
   ) {}
 
-  async encrypt(email: string, payload: object = {}): Promise<string> {
+  async encrypt(payload: object = {}, subject: string): Promise<string> {
     return jwt.sign(payload, this.secret, {
-      subject: email,
-      expiresIn: 5,
+      subject,
+      expiresIn: this.expiresIn,
     })
   }
   async decrypt(ciphertext: string): Promise<string> {

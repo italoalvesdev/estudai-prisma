@@ -1,3 +1,3 @@
 export interface Encrypter {
-  encrypt(email: string, payload: object): Promise<string>
+  encrypt(payload: object, subject: string): Promise<string>
 }

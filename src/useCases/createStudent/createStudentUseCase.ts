@@ -1,6 +1,6 @@
 import { 
-  CheckByCpf,
-  CheckByFoneMobile,
+  CheckByCpfRepository,
+  CheckByFoneMobileRepository,
   CheckStudentByEmailRepository,  
   CreateStudent, 
   CreateStudentData, 
@@ -13,18 +13,18 @@ export class CreateStudentUseCase implements CreateStudent {
     private readonly encrypter: Hasher,
     private readonly createStudentRepository: CreateStudentRepository,
     private readonly checkStudentByEmailRepository: CheckStudentByEmailRepository,
-    private readonly checkByCpf: CheckByCpf,
-    private readonly checkByFoneMobile: CheckByFoneMobile
+    private readonly checkByCpfRepository: CheckByCpfRepository,
+    private readonly checkByFoneMobileRepository: CheckByFoneMobileRepository
   ) {}
 
   async create(studentData: CreateStudentData): Promise<void> {
     const studentEmail = await this.checkStudentByEmailRepository
     .checkByEmail(studentData.email);
 
-    const studentCpf = await this.checkByCpf
+    const studentCpf = await this.checkByCpfRepository
     .checkByCpf(studentData.cpf);
 
-    const studentFoneMobile = await this.checkByFoneMobile
+    const studentFoneMobile = await this.checkByFoneMobileRepository
     .checkByFoneMobile(studentData.foneMobile);
 
     if(studentEmail) {

@@ -3,16 +3,16 @@ import {
   CreateStudentRepository,
   CheckStudentByEmailRepository,
   CheckStudentByIdRepository,
-  CheckByCpf,
-  CheckByFoneMobile,
-} from "../../../useCases/protocols/repositories";
+  CheckByCpfRepository,
+  CheckByFoneMobileRepository,
+} from "../../../useCases/protocols/repositories/studentsRepository";
 import { CreateStudentData, StudentModel } from "../../../useCases/createStudent/createStudentProtocols";
 
 export class PrismaStudentsRepository implements 
   CreateStudentRepository, 
   CheckStudentByEmailRepository,
-  CheckByCpf,
-  CheckByFoneMobile,
+  CheckByCpfRepository,
+  CheckByFoneMobileRepository,
   CheckStudentByIdRepository {
 
   async create(data: CreateStudentData): Promise<void> {
