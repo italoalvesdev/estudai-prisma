@@ -26,8 +26,12 @@ export class LoginController implements Controller {
         return unauthorized();
       }
 
-      return ok({accessToken});
+      return ok({ accessToken });
     } catch (error) {
+      switch (error.message) {
+        case 'E-MAIL_OR_PASSWORD_INCORRECT':
+          return unauthorized()
+      }
       return serverError()
     }
   }

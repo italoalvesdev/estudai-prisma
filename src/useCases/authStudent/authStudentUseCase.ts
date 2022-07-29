@@ -13,22 +13,22 @@ export class AuthStudentUseCase implements Authentication {
     private readonly encrypter: Encrypter
   ) {}
 
-  async auth(authentication: AuthenticationData): Promise<string> {
+  async auth({ email, password }: AuthenticationData): Promise<string> {
     const student = await this.checkStudentByEmailRepository.checkByEmail(
-      authentication.email
+      email
     )
 
     if (student) {
-      const isValid = await this.hashComparer.compare(
-        authentication.password,
+      const passwordMatch = await this.hashComparer.compare(
+        password,
         student.password
       )
 
-      if (isValid) {
+      if (passwordMatch) {
         const accessToken = await this.encrypter.encrypt(student.email, { id: student.id })
         return accessToken
       }
     }
-    return null
+    throw new Error('E-MAIL_OR_PASSWORD_INCORRECT')
   }
 }
