@@ -17,7 +17,6 @@ export class SignUpController implements Controller {
   constructor(
     private readonly createStudent: CreateStudent,
     private readonly validation: Validation,
-    private readonly authentication: Authentication
   ) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
@@ -63,12 +62,7 @@ export class SignUpController implements Controller {
         password
       })
 
-      const accessToken = await this.authentication.auth({
-        email,
-        password
-      })
-
-      return ok({ accessToken })
+      return ok()
     } catch (error) {
       switch (error.message) {
         case 'STUDENT_EMAIL_EXISTING':
