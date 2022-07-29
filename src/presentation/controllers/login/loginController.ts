@@ -17,7 +17,7 @@ export class LoginController implements Controller {
 
       const { email, password } = httpRequest.body;
 
-      const accessToken = await this.authentication.auth({
+      const { accessToken, refreshToken } = await this.authentication.auth({
         email,
         password
       });
@@ -26,12 +26,13 @@ export class LoginController implements Controller {
         return unauthorized();
       }
 
-      return ok({ accessToken });
+      return ok({ accessToken, refreshToken });
     } catch (error) {
       switch (error.message) {
         case 'E-MAIL_OR_PASSWORD_INCORRECT':
           return unauthorized()
       }
+      console.log(error)
       return serverError()
     }
   }
