@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from 'jsonwebtoken'
+import { PayloadData } from "../../useCases/protocols/criptography";
+import { 
+  PrismaStudentsTokensRepository 
+} from "../../adapters/repositories/prisma/PrismaStudentsTokensRepository";
 
-import { JwtInvalidTokenError } from "./errors/jwtInvalidTokenError";
 import { JwtTokenMissingError } from "./errors/jwtTokenMissingError";
-
+import { JwtInvalidTokenError } from "./errors/jwtInvalidTokenError";
 import env from "../config/env";
-import { PrismaStudentsRepository } from "../../adapters/repositories/prisma/PrismaStudentsRepository";
 
-interface PayloadData {
-  sub: string
-}
 
 export async function ensureAuthenticated(
   req: Request, 
@@ -18,6 +17,8 @@ export async function ensureAuthenticated(
   ) {
     const authHeader = req.headers.authorization;
 
+    const prismaStudentsTokensRepository = new PrismaStudentsTokensRepository()
+
     if (!authHeader) {
       throw new JwtTokenMissingError();
     }
@@ -25,11 +26,10 @@ export async function ensureAuthenticated(
     const [, token] = authHeader.split(" ");
 
     try {
-      const { sub: email } = verify(token, env.jwtSecret) as PayloadData;
+      const { sub: id } = verify(token, env.refreshTokenSecret) as PayloadData;
 
-      const prismaStudentsRepository = new PrismaStudentsRepository();
-
-      const student = await prismaStudentsRepository.checkByEmail(email)
+      const student = await prismaStudentsTokensRepository
+      .checkByIdAndRefreshToken(id, token)
 
       if(!student) {
         throw new Error('STUDENT_NOT_EXISTING')

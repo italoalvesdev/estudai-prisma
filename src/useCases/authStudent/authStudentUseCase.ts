@@ -34,12 +34,12 @@ export class AuthStudentUseCase implements Authentication {
         const accessToken = await this.accessTokenEncrypter.encrypt({}, student.id)
         const refreshToken = await this.refreshTokenEncrypter.encrypt({ email },  student.id)
         
-        const refreshTokenExpiresDate = this.dateProvider.addDays()
+        const expiresIn = this.dateProvider.addDays()
 
         await this.createRefreshTokenRepository.create({
           studentId: student.id,
           refreshToken,
-          expiresIn: refreshTokenExpiresDate
+          expiresIn 
         })
 
         const tokenReturn: AuthenticationResponse = {
