@@ -1,10 +1,10 @@
-import { Encrypter, Decrypter } from '../../useCases/protocols/criptography'
+import { Encrypter, Decrypter, PayloadData } from '../../useCases/protocols/criptography'
 import jwt from 'jsonwebtoken'
 
 export class JwtAdapter implements Encrypter, Decrypter {
   constructor(
     private readonly secret: string,
-    private readonly expiresIn: string | number
+    private readonly expiresIn?: string | number
   ) {}
 
   async encrypt(payload: object = {}, subject: string): Promise<string> {
@@ -13,7 +13,7 @@ export class JwtAdapter implements Encrypter, Decrypter {
       expiresIn: this.expiresIn,
     })
   }
-  async decrypt(ciphertext: string): Promise<string> {
-    return jwt.verify(ciphertext, this.secret) as any
+  async decrypt(ciphertext: string): Promise<PayloadData | string> {
+    return jwt.verify(ciphertext, this.secret)
   }
 }
