@@ -4,5 +4,5 @@ export interface PayloadData {
 }
 
 export interface Decrypter {
-  decrypt(ciphertext: string): Promise<PayloadData | string>
+  decrypt(ciphertext: string): PayloadData | string
 }

@@ -13,7 +13,7 @@ export class JwtAdapter implements Encrypter, Decrypter {
       expiresIn: this.expiresIn,
     })
   }
-  async decrypt(ciphertext: string): Promise<PayloadData | string> {
+  decrypt(ciphertext: string): PayloadData | string {
     return jwt.verify(ciphertext, this.secret)
   }
 }

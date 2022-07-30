@@ -1,5 +1,6 @@
 import { 
   RefreshToken, 
+  RefreshTokenResponse,
   Encrypter,
   Decrypter, 
   CheckByIdAndRefreshTokenRepository, 
@@ -16,10 +17,12 @@ export class RefreshTokenUseCase implements RefreshToken {
     private readonly deleteByIdRepository: DeleteByIdRepository,
     private readonly refreshTokenEncrypter: Encrypter,
     private readonly dateProvider: DateProvider,
-    private readonly createRefreshTokenRepository: CreateRefreshTokenRepository
+    private readonly createRefreshTokenRepository: CreateRefreshTokenRepository,
+    private readonly accessTokenEncrypter: Encrypter
   ) {}
-  async refresh(token: string) {
-    const { email, sub: studentId } = await this.decrypter.decrypt(token) as PayloadData
+  async refresh(token: string):Promise<RefreshTokenResponse> {
+    const { email, sub: studentId } = this.decrypter
+    .decrypt(token) as PayloadData
 
     const studentToken = await this.checkByIdAndRefreshTokenRepository
     .checkByIdAndRefreshToken(studentId as string, token)
@@ -30,7 +33,8 @@ export class RefreshTokenUseCase implements RefreshToken {
 
     await this.deleteByIdRepository.deleteById(studentToken.id)
 
-    const refreshToken = await this.refreshTokenEncrypter.encrypt({ email }, studentId)
+    const refreshToken = await this.refreshTokenEncrypter
+    .encrypt({ email }, studentId)
 
     const expiresIn = this.dateProvider.addDays()
 
@@ -40,6 +44,13 @@ export class RefreshTokenUseCase implements RefreshToken {
       expiresIn
     })
 
-    return refreshToken
+    const newAccessToken = await this.accessTokenEncrypter
+    .encrypt({}, studentId)
+
+
+    return {
+      refreshToken,
+      accessToken: newAccessToken
+    }
   } 
 }

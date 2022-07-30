@@ -8,22 +8,26 @@ import env from '../../../config/env'
 
 export const makeRefreshTokenFactory = (): RefreshToken => {
   const { 
+    accessTokenSecret,
     refreshTokenSecret, 
+    expiresInAccessToken,
     expiresInRefreshToken, 
     expiresInRefreshTokenDays 
   } = env
 
   const jwtDecrypterAdapter = new JwtAdapter(refreshTokenSecret)
   const prismaStudentsTokensRepository = new PrismaStudentsTokensRepository()
-  const jwtEncrypterAdapter = new JwtAdapter(refreshTokenSecret, expiresInRefreshToken)
+  const jwtRefreshTokenEncrypterAdapter = new JwtAdapter(refreshTokenSecret, expiresInRefreshToken)
   const dayjsAdapter = new DayJSAdapter(expiresInRefreshTokenDays)
+  const jwtAccessTokenEncrypterAdapter = new JwtAdapter(accessTokenSecret, expiresInAccessToken)
 
   return new RefreshTokenUseCase(
     jwtDecrypterAdapter,
     prismaStudentsTokensRepository,
     prismaStudentsTokensRepository,
-    jwtEncrypterAdapter,
+    jwtRefreshTokenEncrypterAdapter,
     dayjsAdapter,
-    prismaStudentsTokensRepository
+    prismaStudentsTokensRepository,
+    jwtAccessTokenEncrypterAdapter
   )
 }
