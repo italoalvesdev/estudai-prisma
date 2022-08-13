@@ -1,3 +1,5 @@
+import env from "../../main/config/env";
+
 import { 
   RefreshToken, 
   RefreshTokenResponse,
@@ -21,6 +23,8 @@ export class RefreshTokenUseCase implements RefreshToken {
     private readonly accessTokenEncrypter: Encrypter
   ) {}
   async refresh(token: string):Promise<RefreshTokenResponse> {
+    const { expiresInRefreshTokenDays } = env
+
     const { email, sub: studentId } = this.decrypter
     .decrypt(token) as PayloadData
 
@@ -36,7 +40,7 @@ export class RefreshTokenUseCase implements RefreshToken {
     const refreshToken = await this.refreshTokenEncrypter
     .encrypt({ email }, studentId)
 
-    const expiresIn = this.dateProvider.addDays()
+    const expiresIn = this.dateProvider.addDays(expiresInRefreshTokenDays)
 
     await this.createRefreshTokenRepository.create({
       studentId,

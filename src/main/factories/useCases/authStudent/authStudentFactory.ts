@@ -1,6 +1,6 @@
 import { BcryptAdapter } from '../../../../adapters/criptography/bcryptAdapter'
 import { JwtAdapter } from '../../../../adapters/criptography/jwtAdapter'
-import { DayJSAdapter } from '../../../../adapters/dateProvider/dayjsAdapter'
+import { DayJSAdapter } from '../../../../adapters/DateProvider/dayjsAdapter'
 import { PrismaStudentsRepository } from '../../../../adapters/repositories/prisma/PrismaStudentsRepository'
 import { PrismaStudentsTokensRepository } from '../../../../adapters/repositories/prisma/PrismaStudentsTokensRepository'
 import { Authentication } from '../../../../domain/useCases/protocols'
@@ -15,7 +15,7 @@ export const makeAuthStudentFactory = (): Authentication => {
   const prismaStudentsRepository = new PrismaStudentsRepository()
   const jwtAccessTokenAdapter = new JwtAdapter(accessTokenSecret, expiresInAccessToken)
   const jwtRefreshTokenAdapter = new JwtAdapter(refreshTokenSecret, expiresInRefreshToken)
-  const dayjsAdapter = new DayJSAdapter(expiresInRefreshTokenDays)
+  const dayjsAdapter = new DayJSAdapter()
   const prismaStudentsTokensRepository = new PrismaStudentsTokensRepository()
   return new AuthStudentUseCase(
     prismaStudentsRepository,

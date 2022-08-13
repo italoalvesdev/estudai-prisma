@@ -1,3 +1,4 @@
+import env from '../../main/config/env'
 import {
   Authentication,
   AuthenticationData,
@@ -20,6 +21,8 @@ export class AuthStudentUseCase implements Authentication {
   ) {}
 
   async auth({ email, password }: AuthenticationData): Promise<AuthenticationResponse> {
+    const { expiresInRefreshTokenDays } = env
+
     const student = await this.checkStudentByEmailRepository.checkByEmail(
       email
     )
@@ -34,7 +37,7 @@ export class AuthStudentUseCase implements Authentication {
         const accessToken = await this.accessTokenEncrypter.encrypt({}, student.id)
         const refreshToken = await this.refreshTokenEncrypter.encrypt({ email },  student.id)
         
-        const expiresIn = this.dateProvider.addDays()
+        const expiresIn = this.dateProvider.addDays(expiresInRefreshTokenDays)
 
         await this.createRefreshTokenRepository.create({
           studentId: student.id,
