@@ -5,6 +5,7 @@ import {
   CheckStudentByIdRepository,
   CheckByCpfRepository,
   CheckByFoneMobileRepository,
+  UpdateStudentRepository
 } from "../../../useCases/protocols/repositories/studentsRepository";
 import { CreateStudentData, StudentModel } from "../../../useCases/createStudent/createStudentProtocols";
 
@@ -13,7 +14,8 @@ export class PrismaStudentsRepository implements
   CheckStudentByEmailRepository,
   CheckByCpfRepository,
   CheckByFoneMobileRepository,
-  CheckStudentByIdRepository {
+  CheckStudentByIdRepository,
+  UpdateStudentRepository {
 
   async create(data: CreateStudentData): Promise<void> {
     await prisma.student.create({
@@ -63,5 +65,12 @@ export class PrismaStudentsRepository implements
       where: { id },
     });
     return student;
+  }
+
+  async updatePassword(id: string, password: string): Promise<void> {
+    await prisma.student.update({
+      where: { id },
+      data: { password }
+    })
   }
 }

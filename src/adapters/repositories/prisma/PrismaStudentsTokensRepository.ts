@@ -3,11 +3,13 @@ import { prisma } from './helpers/prisma'
 import { CheckByIdAndRefreshTokenRepository, CreateRefreshTokenRepository, DeleteByIdRepository } from '../../../useCases/protocols/repositories/studentsTokensRepository';
 import { CreateRefreshTokenData } from '../../../domain/useCases/protocols/studentsToken';
 import { RefreshTokenModel } from '../../../domain/models/refreshTokenModel';
+import { CheckByRefreshTokenRepository } from '../../../useCases/protocols/repositories/studentsTokensRepository/checkByRefreshTokenRepository';
 
 export class PrismaStudentsTokensRepository implements 
   CreateRefreshTokenRepository, 
   CheckByIdAndRefreshTokenRepository, 
-  DeleteByIdRepository {
+  DeleteByIdRepository,
+  CheckByRefreshTokenRepository {
 
   async create({ studentId, refreshToken, expiresIn }: CreateRefreshTokenData): Promise<RefreshTokenModel> {
     const studentToken = await prisma.refreshToken.create({
@@ -32,5 +34,13 @@ export class PrismaStudentsTokensRepository implements
     await prisma.refreshToken.delete({
       where: { id }
     })
+  }
+
+  async checkByRefreshToken(refreshToken: string): Promise<RefreshTokenModel> {
+    const studentToken = await prisma.refreshToken.findFirst({
+      where: { refresh_token: refreshToken }
+    })
+
+    return studentToken
   }
 }
